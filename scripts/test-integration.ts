@@ -2,11 +2,11 @@
 // scripts/test-integration.ts
 // Manual integration test script for the calendar system
 
-import { GoogleCalendarFetcher } from '../lib/calendar-fetcher';
-import { EventValidator } from '../lib/event-validator';
-import { AgeGroupDetector } from '../lib/age-group-detector';
-import { CalendarUtils } from '../lib/calendar-utils';
-import { Logger } from '../lib/logger';
+import { GoogleCalendarFetcher } from '../src/lib/calendar-fetcher';
+import { EventValidator } from '../src/lib/event-validator';
+import { AgeGroupDetector } from '../src/lib/age-group-detector';
+import { CalendarUtils } from '../src/lib/calendar-utils';
+import { Logger } from '../src/lib/logger';
 
 // Sample calendar data for integration testing
 const sampleCalendarData = `BEGIN:VCALENDAR
