@@ -1,20 +1,15 @@
 // lib/kv-storage.ts - KV Storage wrapper for caching calendar data
 import { ProcessedEvent, CalendarFetchResult, SystemHealth } from '@/shared/types';
 import { KVStorageMock } from './kv-storage-mock';
+import { kv as vercelKv, VercelKV } from '@vercel/kv';
 
-// Dynamic import to handle missing KV credentials gracefully
-let kv: any = null;
+let kv: VercelKV | null = null;
 let usingMock = false;
 
-try {
-  if (process.env.KV_URL && process.env.KV_REST_API_URL) {
-    kv = require('@vercel/kv').kv;
-  } else {
-    console.log('⚠️  KV credentials not found - using mock storage for local development');
-    usingMock = true;
-  }
-} catch (error) {
-  console.log('⚠️  KV not available - using mock storage for local development');
+if (process.env.KV_URL && process.env.KV_REST_API_URL) {
+  kv = vercelKv;
+} else {
+  console.log('⚠️  KV credentials not found - using mock storage for local development');
   usingMock = true;
 }
 
@@ -23,7 +18,7 @@ const mockStorage = new KVStorageMock();
 export class KVStorage {
   // Store calendar events with TTL
   async storeEvents(events: ProcessedEvent[]): Promise<void> {
-    if (usingMock) {
+    if (usingMock || !kv) {
       return mockStorage.storeEvents(events);
     }
     
@@ -37,7 +32,7 @@ export class KVStorage {
 
   // Retrieve stored events
   async getEvents(): Promise<ProcessedEvent[]> {
-    if (usingMock) {
+    if (usingMock || !kv) {
       return mockStorage.getEvents();
     }
     
@@ -59,7 +54,7 @@ export class KVStorage {
 
   // Store fetch results and errors for debugging
   async storeFetchResult(result: CalendarFetchResult): Promise<void> {
-    if (usingMock) {
+    if (usingMock || !kv) {
       return mockStorage.storeFetchResult(result);
     }
     
@@ -81,7 +76,7 @@ export class KVStorage {
 
   // Admin time override storage
   async setTimeOverride(mockTime: string | null): Promise<void> {
-    if (usingMock) {
+    if (usingMock || !kv) {
       return mockStorage.setTimeOverride(mockTime);
     }
     
@@ -95,7 +90,7 @@ export class KVStorage {
   }
 
   async getTimeOverride(): Promise<string | null> {
-    if (usingMock) {
+    if (usingMock || !kv) {
       return mockStorage.getTimeOverride();
     }
     
@@ -108,7 +103,7 @@ export class KVStorage {
 
   // Store age group statistics
   async storeAgeGroupStats(stats: Record<string, number>): Promise<void> {
-    if (usingMock) {
+    if (usingMock || !kv) {
       return mockStorage.storeAgeGroupStats(stats);
     }
     
@@ -117,7 +112,7 @@ export class KVStorage {
   }
 
   async getAgeGroupStats(): Promise<Record<string, number>> {
-    if (usingMock) {
+    if (usingMock || !kv) {
       return mockStorage.getAgeGroupStats();
     }
     
@@ -127,7 +122,7 @@ export class KVStorage {
 
   // Health monitoring data
   async getSystemHealth(): Promise<SystemHealth> {
-    if (usingMock) {
+    if (usingMock || !kv) {
       return mockStorage.getSystemHealth();
     }
     
@@ -154,7 +149,7 @@ export class KVStorage {
   }
 
   private async getRecentErrors(): Promise<Array<{timestamp: string, errors: string[]}>> {
-    if (usingMock) {
+    if (usingMock || !kv) {
       return [];
     }
     

@@ -8,11 +8,6 @@ export function AdminPanel() {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleTimeOverride = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,12 +47,6 @@ export function AdminPanel() {
 
   const clearOverride = () => {
     setMockTime('');
-  };
-
-  const setTestTime = (hours: number, minutes: number = 0) => {
-    const testDate = new Date();
-    testDate.setHours(hours, minutes, 0, 0);
-    setMockTime(testDate.toISOString().slice(0, 16));
   };
 
   return (

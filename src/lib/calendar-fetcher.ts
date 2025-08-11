@@ -3,6 +3,9 @@ import { ProcessedEvent } from '@/shared/types';
 import { Logger } from './logger';
 import { AgeGroupDetector } from './age-group-detector';
 
+// Define a type for the raw iCal event data
+type RawCalEvent = Record<string, string>;
+
 // Main class for fetching and processing Google Calendar data
 export class GoogleCalendarFetcher {
   private calendarId: string;
@@ -78,10 +81,10 @@ export class GoogleCalendarFetcher {
     return processed;
   }
 
-  private parseICalContent(icalData: string): any[] {
-    const events: any[] = [];
+  private parseICalContent(icalData: string): RawCalEvent[] {
+    const events: RawCalEvent[] = [];
     const lines = icalData.split(/\r\n|\n/);
-    let currentEvent: any = null;
+    let currentEvent: RawCalEvent | null = null;
     
     for (const line of lines) {
       if (line.startsWith('BEGIN:VEVENT')) {
@@ -106,7 +109,7 @@ export class GoogleCalendarFetcher {
     return events;
   }
   
-  private processEvent(rawEvent: any): ProcessedEvent {
+  private processEvent(rawEvent: RawCalEvent): ProcessedEvent {
     const ageGroup = this.ageDetector.detectAgeGroup(rawEvent.summary || '', rawEvent.description || '');
     
     return {
@@ -153,7 +156,7 @@ export class GoogleCalendarFetcher {
     return text.trim().replace(/[<>]/g, '').replace(/\s+/g, ' ').substring(0, 500);
   }
   
-  private isAllDayEvent(event: any): boolean {
+  private isAllDayEvent(event: RawCalEvent): boolean {
     return !event.dtstart?.includes('T');
   }
   

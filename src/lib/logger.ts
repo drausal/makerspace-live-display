@@ -7,7 +7,7 @@ export interface LogEntry {
   level: LogLevel;
   component: string;
   message: string;
-  data?: any;
+  data?: Record<string, unknown>;
   error?: Error;
 }
 
@@ -20,23 +20,23 @@ export class Logger {
     this.logLevel = level;
   }
 
-  static debug(component: string, message: string, data?: any) {
+  static debug(component: string, message: string, data?: Record<string, unknown>) {
     this.log('debug', component, message, data);
   }
 
-  static info(component: string, message: string, data?: any) {
+  static info(component: string, message: string, data?: Record<string, unknown>) {
     this.log('info', component, message, data);
   }
 
-  static warn(component: string, message: string, data?: any, error?: Error) {
+  static warn(component: string, message: string, data?: Record<string, unknown>, error?: Error) {
     this.log('warn', component, message, data, error);
   }
 
-  static error(component: string, message: string, data?: any, error?: Error) {
+  static error(component: string, message: string, data?: Record<string, unknown>, error?: Error) {
     this.log('error', component, message, data, error);
   }
 
-  private static log(level: LogLevel, component: string, message: string, data?: any, error?: Error) {
+  private static log(level: LogLevel, component: string, message: string, data?: Record<string, unknown>, error?: Error) {
     if (!this.shouldLog(level)) return;
 
     const nowMs = Date.now();
@@ -121,14 +121,14 @@ export class CalendarError extends Error {
   public readonly component: string;
   public readonly errorCode: string;
   public readonly recoverable: boolean;
-  public readonly data?: any;
+  public readonly data?: Record<string, unknown>;
 
   constructor(
     message: string,
     component: string,
     errorCode: string = 'UNKNOWN',
     recoverable: boolean = false,
-    data?: any
+    data?: Record<string, unknown>
   ) {
     super(message);
     this.name = 'CalendarError';
@@ -158,7 +158,7 @@ export class ErrorHandler {
     return { success: false, error: 'Unknown error occurred while fetching calendar' };
   }
 
-  static async handleEventProcessing(error: unknown, eventData?: any): Promise<{ success: false; error: string }> {
+  static async handleEventProcessing(error: unknown, eventData?: Record<string, unknown>): Promise<{ success: false; error: string }> {
     if (error instanceof CalendarError) {
       Logger.error('ErrorHandler', `Event processing failed: ${error.message}`, { eventData, errorCode: error.errorCode });
       return { success: false, error: error.message };

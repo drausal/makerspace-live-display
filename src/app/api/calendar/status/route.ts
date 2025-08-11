@@ -8,7 +8,7 @@ import { Logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic'; // Ensure this route is always dynamic
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const storage = new KVStorage();
 
   try {

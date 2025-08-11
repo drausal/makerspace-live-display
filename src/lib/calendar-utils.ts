@@ -1,5 +1,5 @@
 // lib/calendar-utils.ts
-import { ProcessedEvent, DisplayStatus, AgeGroup } from '@/shared/types';
+import { ProcessedEvent, DisplayStatus } from '@/shared/types';
 
 export class CalendarUtils {
   /**

@@ -7,7 +7,7 @@ interface StatusBannerProps {
   ageGroup?: AgeGroup;
 }
 
-export function StatusBanner({ status, ageGroup }: StatusBannerProps) {
+export function StatusBanner({ status }: StatusBannerProps) {
   const bannerConfig = {
     current: {
       title: 'Event in Progress',
