@@ -58,7 +58,7 @@ export async function GET() {
       timeUntilNext,
       currentEvent: current,
       nextEvent: upcoming[0],
-      mockTime: mockTimeStr,
+      mockTime: mockTimeStr || undefined,
     };
 
     Logger.info('CalendarStatusAPI', `Returning status: ${status}, theme: ${displayTheme}`);
