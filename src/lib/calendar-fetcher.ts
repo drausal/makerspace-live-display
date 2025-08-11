@@ -21,7 +21,7 @@ export class GoogleCalendarFetcher {
       Logger.error('GoogleCalendarFetcher', 'Initialization failed: CALENDAR_ID not provided.');
     } else {
       console.log(`✅ GoogleCalendarFetcher initialized with Calendar ID: ${this.calendarId}`);
-      Logger.log('GoogleCalendarFetcher', `Initialized with Calendar ID: ${this.calendarId}`);
+      Logger.info('GoogleCalendarFetcher', `Initialized with Calendar ID: ${this.calendarId}`);
     }
   }
 
@@ -31,7 +31,7 @@ export class GoogleCalendarFetcher {
     const startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1); // Previous month
     const endDate = new Date(now.getFullYear(), now.getMonth() + 2, 1);   // Next month
     
-    Logger.log('GoogleCalendarFetcher', `Fetching events from ${startDate.toISOString()} to ${endDate.toISOString()}`);
+    Logger.info('GoogleCalendarFetcher', `Fetching events from ${startDate.toISOString()} to ${endDate.toISOString()}`);
     return this.fetchEvents(startDate, endDate);
   }
 
@@ -43,7 +43,7 @@ export class GoogleCalendarFetcher {
     try {
       const icalUrl = `https://calendar.google.com/calendar/ical/${this.calendarId}/public/basic.ics`;
       console.log(`Attempting to fetch live data from: ${icalUrl}`);
-      Logger.log('GoogleCalendarFetcher', `Fetching calendar data from URL: ${icalUrl}`);
+      Logger.info('GoogleCalendarFetcher', `Fetching calendar data from URL: ${icalUrl}`);
       
       const response = await fetch(icalUrl, { next: { revalidate: 600 } }); // Revalidate every 10 minutes
       
@@ -56,7 +56,7 @@ export class GoogleCalendarFetcher {
       
       const icalData = await response.text();
       console.log(`✅ Successfully fetched ${icalData.length} bytes of iCal data.`);
-      Logger.log('GoogleCalendarFetcher', `Successfully fetched ${icalData.length} bytes of iCal data`);
+      Logger.info('GoogleCalendarFetcher', `Successfully fetched ${icalData.length} bytes of iCal data`);
       
       return this.parseICalData(icalData, startDate, endDate);
     } catch (error) {
@@ -71,13 +71,13 @@ export class GoogleCalendarFetcher {
 
   private parseICalData(icalData: string, startDate: Date, endDate: Date): ProcessedEvent[] {
     const rawEvents = this.parseICalContent(icalData);
-    Logger.log('GoogleCalendarFetcher', `Parsed ${rawEvents.length} raw events from iCal data`);
+    Logger.info('GoogleCalendarFetcher', `Parsed ${rawEvents.length} raw events from iCal data`);
 
     const processed = rawEvents
       .map(event => this.processEvent(event))
       .filter(event => this.isValidEvent(event) && this.isInDateRange(event, startDate, endDate));
       
-    Logger.log('GoogleCalendarFetcher', `Found ${processed.length} valid events in the date range`);
+    Logger.info('GoogleCalendarFetcher', `Found ${processed.length} valid events in the date range`);
     return processed;
   }
 

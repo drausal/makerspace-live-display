@@ -16,7 +16,7 @@ export async function GET() {
     const mockTimeStr = await storage.getTimeOverride();
     const currentTime = mockTimeStr ? new Date(mockTimeStr) : new Date();
     
-    Logger.log('CalendarStatusAPI', `Processing request with time: ${currentTime.toISOString()} (mock: ${!!mockTimeStr})`);
+    Logger.info('CalendarStatusAPI', `Processing request with time: ${currentTime.toISOString()} (mock: ${!!mockTimeStr})`);
 
     // 2. Fetch live events
     const allEvents = await calendarFetcher.fetchAllEvents();
@@ -61,7 +61,7 @@ export async function GET() {
       mockTime: mockTimeStr,
     };
 
-    Logger.log('CalendarStatusAPI', `Returning status: ${status}, theme: ${displayTheme}`);
+    Logger.info('CalendarStatusAPI', `Returning status: ${status}, theme: ${displayTheme}`);
     return NextResponse.json(response);
 
   } catch (error) {
