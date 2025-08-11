@@ -1,6 +1,6 @@
 'use client';
 
-import { Component, ReactNode } from 'react';
+import { Component, ReactNode, useState, useEffect } from 'react';
 
 interface ErrorBoundaryProps {
   children: ReactNode;

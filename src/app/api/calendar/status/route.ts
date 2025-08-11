@@ -1,5 +1,5 @@
 // app/api/calendar/status/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { DisplayStatus } from '@/shared/types';
 import { calendarFetcher } from '@/lib/calendar-fetcher';
 import { eventValidator } from '@/lib/event-validator';
