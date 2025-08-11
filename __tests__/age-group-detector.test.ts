@@ -1,5 +1,5 @@
 // __tests__/age-group-detector.test.ts
-import { AgeGroupDetector } from '../lib/age-group-detector';
+import { AgeGroupDetector } from '../src/lib/age-group-detector';
 
 describe('AgeGroupDetector', () => {
   let detector: AgeGroupDetector;

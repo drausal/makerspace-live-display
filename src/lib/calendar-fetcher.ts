@@ -35,7 +35,7 @@ export class GoogleCalendarFetcher {
   // Fetch events for a specific date range
   async fetchEvents(startDate: Date, endDate: Date): Promise<ProcessedEvent[]> {
     if (!this.calendarId) {
-      return []; // Do not attempt to fetch without a calendar ID
+      return Promise.reject(new Error('Google Calendar ID is not configured.'));
     }
     try {
       const icalUrl = `https://calendar.google.com/calendar/ical/${this.calendarId}/public/basic.ics`;
@@ -60,7 +60,7 @@ export class GoogleCalendarFetcher {
       // **Debug Log:** Log any error during the process
       console.error('🚨 Error during calendar fetch or parse:', error);
       Logger.error('GoogleCalendarFetcher', 'Error fetching or parsing calendar data', {}, error as Error);
-      return [];
+      throw error;
     }
   }
 
@@ -100,6 +100,7 @@ export class GoogleCalendarFetcher {
         if (key.startsWith('DTEND')) currentEvent.dtend = this.parseICalDateTime(value);
         if (key.startsWith('UID')) currentEvent.uid = value;
         if (key.startsWith('RRULE')) currentEvent.rrule = value;
+        if (key.startsWith('STATUS')) currentEvent.status = this.decodeICalValue(value).toLowerCase();
       }
     }
     return events;
@@ -115,7 +116,7 @@ export class GoogleCalendarFetcher {
       location: this.cleanText(rawEvent.location || ''),
       start: rawEvent.dtstart || new Date().toISOString(),
       end: rawEvent.dtend || new Date().toISOString(),
-      status: 'confirmed',
+      status: rawEvent.status || 'confirmed',
       isAllDay: this.isAllDayEvent(rawEvent),
       ageGroup,
       categories: this.extractCategories(rawEvent.description || ''),

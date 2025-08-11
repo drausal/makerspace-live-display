@@ -1,5 +1,5 @@
 // __tests__/logger.test.ts
-import { Logger, CalendarError, ErrorHandler, CalendarErrorCodes } from '../lib/logger';
+import { Logger, CalendarError, ErrorHandler, CalendarErrorCodes } from '../src/lib/logger';
 
 describe('Logger', () => {
   beforeEach(() => {

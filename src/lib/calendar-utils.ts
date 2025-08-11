@@ -8,8 +8,6 @@ export class CalendarUtils {
   static getDisplayStatus(events: ProcessedEvent[], currentTime: Date = new Date(), mockTime?: string): DisplayStatus {
     const effectiveTime = mockTime ? new Date(mockTime) : currentTime;
     
-    console.log(`Calculating display status for time: ${effectiveTime.toISOString()}`);
-    
     // Sort events by start time
     const sortedEvents = [...events].sort((a, b) => 
       new Date(a.start).getTime() - new Date(b.start).getTime()
@@ -33,27 +31,39 @@ export class CalendarUtils {
     
     if (currentEvent) {
       status = 'current';
-      console.log(`✅ Current event: ${currentEvent.title}`);
     } else if (nextEvent) {
       status = 'between';
       timeUntilNext = this.formatTimeUntil(effectiveTime, new Date(nextEvent.start));
-      console.log(`⏰ Between events, next: ${nextEvent.title} in ${timeUntilNext}`);
     } else {
       status = 'closed';
-      console.log(`🔒 No upcoming events - closed`);
     }
     
     return {
       status,
       currentEvent,
       nextEvent,
-      // Preserve provided mockTime string format exactly to match tests
       currentTime: mockTime ? mockTime : effectiveTime.toISOString(),
       mockTime,
       timeUntilNext,
       displayTheme: currentEvent?.ageGroup?.color || nextEvent?.ageGroup?.color
     };
   }
+
+  /**
+   * Filters events for a specific day, comparing in UTC to avoid timezone issues.
+   */
+  static getTodaysEvents(events: ProcessedEvent[], date: Date = new Date()): ProcessedEvent[] {
+    return events.filter(event => {
+      const eventStart = new Date(event.start);
+      return (
+        eventStart.getUTCFullYear() === date.getUTCFullYear() &&
+        eventStart.getUTCMonth() === date.getUTCMonth() &&
+        eventStart.getUTCDate() === date.getUTCDate()
+      );
+    });
+  }
+
+  // ... (rest of the class remains the same)
 
   /**
    * Back-compat wrapper: returns current display status. Optionally accepts mockTime ISO string.
@@ -98,21 +108,6 @@ export class CalendarUtils {
     if (hours > 0) return `${hours}h ${minutes}m`;
     if (minutes > 0) return `${minutes}m`;
     return '< 1m';
-  }
-  
-  /**
-   * Filters events for today only
-   */
-  static getTodaysEvents(events: ProcessedEvent[], date: Date = new Date()): ProcessedEvent[] {
-    // Compute UTC day boundaries to avoid timezone drift in tests
-    const d = new Date(date);
-    const startUTC = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0, 0));
-    const endUTC = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1, 0, 0, 0, 0));
-    
-    return events.filter(event => {
-      const eventStart = new Date(event.start);
-      return eventStart >= startUTC && eventStart < endUTC;
-    });
   }
 
   /**

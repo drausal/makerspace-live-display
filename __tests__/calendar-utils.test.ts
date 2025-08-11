@@ -1,6 +1,6 @@
 // __tests__/calendar-utils.test.ts
-import { CalendarUtils } from '../lib/calendar-utils';
-import { ProcessedEvent, DisplayStatus } from '../shared/types';
+import { CalendarUtils } from '../src/lib/calendar-utils';
+import { ProcessedEvent, DisplayStatus } from '../src/shared/types';
 
 describe('CalendarUtils', () => {
   const createMockEvent = (overrides: Partial<ProcessedEvent> = {}): ProcessedEvent => ({
@@ -317,42 +317,26 @@ describe('CalendarUtils', () => {
       jest.restoreAllMocks();
     });
 
-    it('should return only today\'s events', () => {
-      const events = [
-        createMockEvent({
-          id: '1',
-          start: '2025-08-10T09:00:00Z' // Today
-        }),
-        createMockEvent({
-          id: '2',
-          start: '2025-08-11T09:00:00Z' // Tomorrow
-        }),
-        createMockEvent({
-          id: '3',
-          start: '2025-08-10T20:00:00Z' // Today (evening)
-        })
+    it("should return only today's events", () => {
+      const events: ProcessedEvent[] = [
+        { id: '1', start: '2025-08-10T09:00:00Z', end: '2025-08-10T10:00:00Z', title: 'Today 1', ageGroup: {} } as ProcessedEvent,
+        { id: '2', start: '2025-08-11T09:00:00Z', end: '2025-08-11T10:00:00Z', title: 'Tomorrow', ageGroup: {} } as ProcessedEvent,
+        { id: '3', start: '2025-08-10T20:00:00Z', end: '2025-08-10T21:00:00Z', title: 'Today 2', ageGroup: {} } as ProcessedEvent,
       ];
 
-      const todaysEvents = CalendarUtils.getTodaysEvents(events);
+      const todaysEvents = CalendarUtils.getTodaysEvents(events, new Date('2025-08-10T11:00:00Z'));
 
       expect(todaysEvents).toHaveLength(2);
       expect(todaysEvents.map(e => e.id)).toEqual(['1', '3']);
     });
 
-    it('should handle timezone correctly', () => {
-      // Event at midnight UTC should be today if we're testing at 11:00 UTC
-      const events = [
-        createMockEvent({
-          id: '1',
-          start: '2025-08-10T00:00:00Z'
-        }),
-        createMockEvent({
-          id: '2',
-          start: '2025-08-10T23:59:59Z'
-        })
+    it("should handle timezone correctly", () => {
+      const events: ProcessedEvent[] = [
+        { id: '1', start: '2025-08-10T00:00:00Z', end: '2025-08-10T01:00:00Z', title: 'Midnight UTC', ageGroup: {} } as ProcessedEvent,
+        { id: '2', start: '2025-08-10T23:59:59Z', end: '2025-08-11T01:00:00Z', title: 'Almost tomorrow UTC', ageGroup: {} } as ProcessedEvent,
       ];
 
-      const todaysEvents = CalendarUtils.getTodaysEvents(events);
+      const todaysEvents = CalendarUtils.getTodaysEvents(events, new Date('2025-08-10T11:00:00Z'));
 
       expect(todaysEvents).toHaveLength(2);
     });

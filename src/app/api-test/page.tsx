@@ -20,13 +20,6 @@ export default function ApiTestPage() {
       </div>
 
       <div style={{ marginBottom: '20px' }}>
-        <h3>Calendar Fetch (Trigger)</h3>
-        <a href="/api/cron/calendar-fetch" target="_blank" style={{ color: 'blue', textDecoration: 'underline' }}>
-          /api/cron/calendar-fetch
-        </a>
-      </div>
-
-      <div style={{ marginBottom: '20px' }}>
         <h3>Admin Time Override</h3>
         <p>POST to /api/admin/time-override with password and time data</p>
       </div>

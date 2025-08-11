@@ -1,9 +1,9 @@
 // __tests__/integration/calendar-integration.test.ts
-import { GoogleCalendarFetcher } from '../../lib/calendar-fetcher';
-import { EventValidator } from '../../lib/event-validator';
-import { AgeGroupDetector } from '../../lib/age-group-detector';
-import { CalendarUtils } from '../../lib/calendar-utils';
-import { Logger } from '../../lib/logger';
+import { GoogleCalendarFetcher } from '../../src/lib/calendar-fetcher';
+import { EventValidator } from '../../src/lib/event-validator';
+import { AgeGroupDetector } from '../../src/lib/age-group-detector';
+import { CalendarUtils } from '../../src/lib/calendar-utils';
+import { Logger } from '../../src/lib/logger';
 
 describe('Calendar System Integration', () => {
   let fetcher: GoogleCalendarFetcher;
@@ -278,7 +278,7 @@ END:VCALENDAR`;
       expect(currentEvents[0].ageGroup.group).toBe('adults');
 
       // Test today's events
-      const todaysEvents = CalendarUtils.getTodaysEvents(filteredEvents);
+      const todaysEvents = CalendarUtils.getTodaysEvents(filteredEvents, new Date('2025-08-10T11:00:00Z'));
       expect(todaysEvents.length).toBe(filteredEvents.length); // All events are today
     });
   });

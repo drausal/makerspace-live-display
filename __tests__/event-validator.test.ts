@@ -1,6 +1,6 @@
 // __tests__/event-validator.test.ts
-import { EventValidator } from '../lib/event-validator';
-import { ProcessedEvent } from '../shared/types';
+import { EventValidator } from '../src/lib/event-validator';
+import { ProcessedEvent } from '../src/shared/types';
 
 describe('EventValidator', () => {
   let validator: EventValidator;
