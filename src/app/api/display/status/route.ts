@@ -1,6 +1,6 @@
 // app/api/display/status/route.ts
 import { NextResponse } from 'next/server';
-import { DisplayStatus, ProcessedEvent } from '@/shared/types';
+import { DisplayStatus, ProcessedEvent, AgeGroup } from '@/shared/types';
 import { KVStorage } from '@/lib/kv-storage';
 
 export async function GET() {
@@ -47,7 +47,7 @@ export async function GET() {
 
     if (currentEvent) {
       status = 'current';
-      displayTheme = getThemeFromAgeGroup(currentEvent.ageGroup);
+      displayTheme = getThemeFromAgeGroup(currentEvent.ageGroup.group);
       
       // Calculate time until current event ends
       const endTime = new Date(currentEvent.end);
@@ -60,7 +60,7 @@ export async function GET() {
       // If next event is within 2 hours, show "between events"
       if (msUntilStart <= 2 * 60 * 60 * 1000) {
         status = 'between';
-        displayTheme = getThemeFromAgeGroup(nextEvent.ageGroup);
+        displayTheme = getThemeFromAgeGroup(nextEvent.ageGroup.group);
         timeUntilNext = formatTimeRemaining(msUntilStart);
       } else {
         status = 'closed';
@@ -104,17 +104,11 @@ export async function GET() {
   }
 }
 
-function getThemeFromAgeGroup(ageGroup: string): string {
-  const themeMap: Record<string, string> = {
-    'all-ages': 'allages',
-    'kids': 'elementary',
-    'teens': 'teens', 
-    'adults': 'adults',
-    'seniors': 'adults',
-    'unknown': 'unknown'
-  };
-  
-  return themeMap[ageGroup] || 'unknown';
+function getThemeFromAgeGroup(ageGroup: AgeGroup['group']): string {
+  // The ageGroup.group is now the source of truth for the theme, 
+  // so we can just return it. This simplifies logic and respects the
+  // single source of truth from the AgeGroup type.
+  return ageGroup;
 }
 
 function formatTimeRemaining(ms: number): string {

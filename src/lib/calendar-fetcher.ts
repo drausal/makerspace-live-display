@@ -119,13 +119,22 @@ export class GoogleCalendarFetcher {
       location: this.cleanText(rawEvent.location || ''),
       start: rawEvent.dtstart || new Date().toISOString(),
       end: rawEvent.dtend || new Date().toISOString(),
-      status: rawEvent.status || 'confirmed',
+      status: this.validateStatus(rawEvent.status),
       isAllDay: this.isAllDayEvent(rawEvent),
       ageGroup,
       categories: this.extractCategories(rawEvent.description || ''),
       registrationUrl: this.extractRegistrationUrl(rawEvent.description || ''),
       isRecurring: Boolean(rawEvent.rrule)
     };
+  }
+  
+  private validateStatus(status: string | undefined): ProcessedEvent['status'] {
+    const lowerCaseStatus = status?.toLowerCase();
+    if (lowerCaseStatus === 'confirmed' || lowerCaseStatus === 'cancelled' || lowerCaseStatus === 'tentative') {
+      return lowerCaseStatus;
+    }
+    // Default to 'tentative' if status is missing or invalid, which is safer than assuming 'confirmed'.
+    return 'tentative';
   }
   
   private decodeICalValue(value: string): string {
@@ -149,7 +158,14 @@ export class GoogleCalendarFetcher {
   }
   
   private isValidEvent(event: ProcessedEvent): boolean {
-    return event.title && event.start && event.end && new Date(event.start) < new Date(event.end);
+    const hasRequiredFields = !!(event.title && event.start && event.end);
+    if (!hasRequiredFields) return false;
+    
+    try {
+      return new Date(event.start) < new Date(event.end);
+    } catch {
+      return false;
+    }
   }
   
   private cleanText(text: string): string {
