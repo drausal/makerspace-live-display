@@ -51,8 +51,8 @@ export function Clock({ currentTime, mockTime }: ClockProps) {
 
   return (
     <div className="text-right">
-      <div className="text-9xl font-bold tabular-nums">{formatTime(displayTime)}</div>
-      <div className="text-5xl text-secondary">{formatDate(displayTime)}</div>
+      <div className="text-[9.5rem] font-bold tabular-nums leading-none">{formatTime(displayTime)}</div>
+      <div className="text-[3.25rem] text-secondary mt-2">{formatDate(displayTime)}</div>
     </div>
   );
 }

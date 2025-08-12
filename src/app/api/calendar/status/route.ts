@@ -30,24 +30,26 @@ export async function GET() {
     // 4. Determine the display status
     let status: DisplayStatus['status'] = 'closed';
     let displayTheme = 'closed';
+    let timeRemaining: string | undefined;
     let timeUntilNext: string | undefined;
 
     if (current) {
       status = 'current';
       displayTheme = current.ageGroup.group;
       const endTime = new Date(current.end);
-      timeUntilNext = formatTimeRemaining(endTime.getTime() - currentTime.getTime());
-    } else if (upcoming.length > 0) {
+      timeRemaining = formatTimeRemaining(endTime.getTime() - currentTime.getTime());
+    } 
+    
+    if (upcoming.length > 0) {
       const nextEvent = upcoming[0];
       const startTime = new Date(nextEvent.start);
       const timeToStart = startTime.getTime() - currentTime.getTime();
 
-      // Display "between" status if the next event is within 2 hours
-      if (timeToStart <= 2 * 60 * 60 * 1000) {
+      if (status === 'closed' && timeToStart <= 2 * 60 * 60 * 1000) {
         status = 'between';
         displayTheme = nextEvent.ageGroup.group;
-        timeUntilNext = formatTimeRemaining(timeToStart);
       }
+      timeUntilNext = formatTimeRemaining(timeToStart);
     }
 
     // 5. Construct the final response
@@ -55,6 +57,7 @@ export async function GET() {
       status,
       currentTime: currentTime.toISOString(),
       displayTheme,
+      timeRemaining,
       timeUntilNext,
       currentEvent: current,
       nextEvent: upcoming[0],

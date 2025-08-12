@@ -86,7 +86,7 @@ export function TVDisplay() {
   return (
     <ErrorBoundary>
       <div className={`tv-display theme-${theme} animate-fadeIn p-16`}>
-        <header className="flex justify-between items-start mb-16">
+        <header className="grid grid-cols-2 items-start mb-16">
           <div>
             <h1 className="text-9xl font-extrabold">HQ MAKERSPACE</h1>
             <p className="text-6xl text-secondary">Event Schedule</p>
@@ -108,7 +108,7 @@ export function TVDisplay() {
               <EventCard
                 event={displayStatus.currentEvent}
                 type="current"
-                timeRemaining={displayStatus.timeUntilNext}
+                timeRemaining={displayStatus.timeRemaining}
               />
             )}
 

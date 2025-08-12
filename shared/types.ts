@@ -29,6 +29,7 @@ export interface DisplayStatus {
   nextEvent?: ProcessedEvent;
   currentTime: string;
   mockTime?: string; // For admin time override
+  timeRemaining?: string;
   timeUntilNext?: string;
   displayTheme?: string;
 }
