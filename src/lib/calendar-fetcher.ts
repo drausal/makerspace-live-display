@@ -28,7 +28,8 @@ export class GoogleCalendarFetcher {
   // Fetch all events within a 3-month range
   async fetchAllEvents(): Promise<ProcessedEvent[]> {
     const now = new Date();
-    const startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1); // Previous month
+    const startDate = new Date(now);
+    startDate.setDate(now.getDate() - 1); // Yesterday
     const endDate = new Date(now.getFullYear(), now.getMonth() + 2, 1);   // Next month
     
     Logger.info('GoogleCalendarFetcher', `Fetching events from ${startDate.toISOString()} to ${endDate.toISOString()}`);
@@ -67,8 +68,6 @@ export class GoogleCalendarFetcher {
     }
   }
 
-  // ... (rest of the file is unchanged)
-
   private parseICalData(icalData: string, startDate: Date, endDate: Date): ProcessedEvent[] {
     const rawEvents = this.parseICalContent(icalData);
     Logger.info('GoogleCalendarFetcher', `Parsed ${rawEvents.length} raw events from iCal data`);
@@ -83,18 +82,26 @@ export class GoogleCalendarFetcher {
 
   private parseICalContent(icalData: string): RawCalEvent[] {
     const events: RawCalEvent[] = [];
-    const lines = icalData.split(/\r\n|\n/);
+    // Unfold multi-line properties. A line starting with a space or tab is a continuation of the previous line.
+    const unfoldedData = icalData.replace(/\r\n[ \t]/g, '').replace(/\n[ \t]/g, '');
+    const lines = unfoldedData.split(/\r\n|\n/);
     let currentEvent: RawCalEvent | null = null;
     
     for (const line of lines) {
       if (line.startsWith('BEGIN:VEVENT')) {
         currentEvent = {};
       } else if (line.startsWith('END:VEVENT') && currentEvent) {
-        events.push(currentEvent);
+        if (Object.keys(currentEvent).length > 0) {
+          events.push(currentEvent);
+        }
         currentEvent = null;
       } else if (currentEvent) {
-        const [key, ...valueParts] = line.split(':');
-        const value = valueParts.join(':');
+        const separatorIndex = line.indexOf(':');
+        if (separatorIndex === -1) {
+          continue;
+        }
+        const key = line.substring(0, separatorIndex);
+        const value = line.substring(separatorIndex + 1);
         
         if (key.startsWith('SUMMARY')) currentEvent.summary = this.decodeICalValue(value);
         if (key.startsWith('DESCRIPTION')) currentEvent.description = this.decodeICalValue(value);
@@ -109,13 +116,31 @@ export class GoogleCalendarFetcher {
     return events;
   }
   
+  private formatDescription(text: string): string {
+    if (!text) return '';
+    
+    // Unicode regex for emojis in common ranges. The 'u' flag is essential.
+    const emojiRegex = /([\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}])/gu;
+    
+    // Add a newline before each emoji.
+    const formattedText = text.replace(emojiRegex, '\n$1');
+    
+    // Clean up the text, preserving newlines.
+    // Split by lines, trim each line, filter empty ones, and rejoin.
+    return formattedText
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line)
+      .join('\n');
+  }
+
   private processEvent(rawEvent: RawCalEvent): ProcessedEvent {
     const ageGroup = this.ageDetector.detectAgeGroup(rawEvent.summary || '', rawEvent.description || '');
     
     return {
       id: rawEvent.uid || this.generateId(),
       title: this.cleanText(rawEvent.summary || 'Untitled Event'),
-      description: this.cleanText(rawEvent.description || ''),
+      description: this.formatDescription(rawEvent.description || ''),
       location: this.cleanText(rawEvent.location || ''),
       start: rawEvent.dtstart || new Date().toISOString(),
       end: rawEvent.dtend || new Date().toISOString(),
@@ -169,7 +194,7 @@ export class GoogleCalendarFetcher {
   }
   
   private cleanText(text: string): string {
-    return text.trim().replace(/[<>]/g, '').replace(/\s+/g, ' ').substring(0, 500);
+    return text.trim().replace(/[<>]/g, '').replace(/\s+/g, ' ');
   }
   
   private isAllDayEvent(event: RawCalEvent): boolean {

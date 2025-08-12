@@ -28,7 +28,9 @@ export function EventCard({ event, type, timeRemaining, timeUntilStart }: EventC
       <h3 className="text-8xl font-extrabold text-foreground mb-6">{event.title}</h3>
 
       {event.description && (
-        <p className="text-5xl text-secondary mb-10">{event.description}</p>
+        <p className="text-5xl text-secondary mb-10 break-words whitespace-pre-line">
+          {event.description}
+        </p>
       )}
 
       <div className="grid grid-cols-2 gap-8 text-center">
