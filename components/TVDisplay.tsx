@@ -101,6 +101,7 @@ export function TVDisplay() {
           <StatusBanner
             status={displayStatus.status}
             ageGroup={displayStatus.currentEvent?.ageGroup}
+            nextEvent={displayStatus.nextEvent}
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mt-16">
@@ -121,14 +122,6 @@ export function TVDisplay() {
             )}
           </div>
 
-          {displayStatus.status === 'closed' && (
-            <div className="text-center mt-16">
-              <h2 className="text-9xl">CLOSED</h2>
-              <p className="text-7xl text-secondary mt-6">
-                No events scheduled at this time.
-              </p>
-            </div>
-          )}
         </main>
 
         <footer className="text-center text-secondary text-2xl mt-16">

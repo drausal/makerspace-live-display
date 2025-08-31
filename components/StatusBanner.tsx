@@ -1,13 +1,14 @@
 "use client";
 
-import { DisplayStatus, AgeGroup } from '@/shared/types';
+import { DisplayStatus, AgeGroup, ProcessedEvent } from '@/shared/types';
 
 interface StatusBannerProps {
   status: DisplayStatus['status'];
   ageGroup?: AgeGroup;
+  nextEvent?: ProcessedEvent;
 }
 
-export function StatusBanner({ status }: StatusBannerProps) {
+export function StatusBanner({ status, nextEvent }: StatusBannerProps) {
   const bannerConfig = {
     current: {
       title: 'Event in Progress',
@@ -18,7 +19,7 @@ export function StatusBanner({ status }: StatusBannerProps) {
       color: 'text-warning',
     },
     closed: {
-      title: 'Makerspace Closed',
+      title: nextEvent ? 'Currently Closed' : 'Makerspace Closed',
       color: 'text-secondary',
     },
   } as const;
