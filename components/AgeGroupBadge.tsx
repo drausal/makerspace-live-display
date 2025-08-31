@@ -1,6 +1,7 @@
 "use client";
 
 import { AgeGroup } from '@/shared/types';
+import { HStack, Text, Badge } from '@chakra-ui/react';
 
 interface AgeGroupBadgeProps {
   ageGroup: AgeGroup;
@@ -8,15 +9,27 @@ interface AgeGroupBadgeProps {
 }
 
 export function AgeGroupBadge({ ageGroup, className = '' }: AgeGroupBadgeProps) {
+  const themeColor = `var(--theme-${ageGroup.group})`;
+  
   return (
-    <div
-      className={`flex items-center gap-6 text-5xl font-bold ${className}`.trim()}
-      style={{ color: `var(--theme-${ageGroup.group})` }}
+    <Badge 
+      size="lg"
+      variant="solid"
+      bg={themeColor}
+      color="white"
+      px="6"
+      py="3"
+      rounded="full"
+      fontSize="2xl"
+      fontWeight="bold"
+      className={className}
     >
-      <span className="text-7xl" aria-hidden="true">
-        {ageGroup.emoji}
-      </span>
-      <span>{ageGroup.label}</span>
-    </div>
+      <HStack gap="2">
+        <Text fontSize="3xl" aria-hidden="true">
+          {ageGroup.emoji}
+        </Text>
+        <Text>{ageGroup.label}</Text>
+      </HStack>
+    </Badge>
   );
 }

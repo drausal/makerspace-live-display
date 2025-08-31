@@ -7,6 +7,19 @@ import { EventCard } from './EventCard';
 import { StatusBanner } from './StatusBanner';
 import { Clock } from './Clock';
 import { ErrorBoundary } from './ErrorBoundary';
+import {
+  Box,
+  Container,
+  Flex,
+  Grid,
+  GridItem,
+  Heading,
+  Text,
+  Button,
+  VStack,
+  HStack,
+  Spinner
+} from '@chakra-ui/react';
 
 export function TVDisplay() {
   const [displayStatus, setDisplayStatus] = useState<DisplayStatus | null>(null);
@@ -55,27 +68,59 @@ export function TVDisplay() {
 
   if (loading) {
     return (
-      <div className="tv-display items-center justify-center text-center p-16">
-        <h1 className="text-8xl">HQ MAKERSPACE</h1>
-        <p className="text-5xl mt-6 text-secondary">Loading Display...</p>
-      </div>
+      <Flex 
+        className="tv-display" 
+        minH="100vh" 
+        direction="column"
+        align="center" 
+        justify="center" 
+        textAlign="center" 
+        p="16"
+      >
+        <VStack gap="6">
+          <Heading size="6xl" fontWeight="extrabold">HQ MAKERSPACE</Heading>
+          <Text fontSize="4xl" color="fg.muted">Loading Display...</Text>
+          <Spinner size="xl" color="blue.500" />
+        </VStack>
+      </Flex>
     );
   }
 
   if (error) {
     return (
-      <div className="tv-display items-center justify-center text-center p-16">
-        <div className="bg-surface p-20 rounded-lg border-8 border-danger">
-          <h1 className="text-8xl text-danger">Display Error</h1>
-          <p className="text-5xl mt-6">{error}</p>
-          <button
-            onClick={fetchStatus}
-            className="mt-16 bg-primary text-white font-bold py-6 px-12 rounded-lg text-4xl"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
+      <Flex 
+        className="tv-display" 
+        minH="100vh" 
+        direction="column"
+        align="center" 
+        justify="center" 
+        textAlign="center" 
+        p="16"
+      >
+        <Box 
+          bg="surface" 
+          p="20" 
+          rounded="lg" 
+          borderWidth="4px" 
+          borderColor="red.500"
+          maxW="4xl"
+        >
+          <VStack gap="6">
+            <Heading size="5xl" color="red.400">Display Error</Heading>
+            <Text fontSize="3xl">{error}</Text>
+            <Button
+              onClick={fetchStatus}
+              size="lg"
+              colorPalette="blue"
+              fontSize="2xl"
+              px="12"
+              py="6"
+            >
+              Retry
+            </Button>
+          </VStack>
+        </Box>
+      </Flex>
     );
   }
 
@@ -85,56 +130,82 @@ export function TVDisplay() {
 
   return (
     <ErrorBoundary>
-      <div className={`tv-display theme-${theme} animate-fadeIn p-16`}>
-        <header className="grid grid-cols-2 items-start mb-16">
-          <div>
-            <h1 className="text-9xl font-extrabold">HQ MAKERSPACE</h1>
-            <p className="text-6xl text-secondary">Event Schedule</p>
-          </div>
-          <Clock
-            currentTime={displayStatus.currentTime}
-            mockTime={displayStatus.mockTime}
-          />
-        </header>
+      <Box 
+        className={`tv-display theme-${theme} animate-fadeIn`} 
+        h="100vh" 
+        w="100vw"
+        p="8"
+        display="flex"
+        flexDirection="column"
+        overflow="hidden"
+      >
+        <Grid as="header" templateColumns="1fr 1fr" alignItems="start" mb="8" h="120px">
+          <GridItem>
+            <VStack align="start" gap="2">
+              <Heading size="5xl" fontWeight="extrabold">HQ MAKERSPACE</Heading>
+              <Text fontSize="3xl" color="fg.muted">Event Schedule</Text>
+            </VStack>
+          </GridItem>
+          <GridItem>
+            <Clock
+              currentTime={displayStatus.currentTime}
+              mockTime={displayStatus.mockTime}
+            />
+          </GridItem>
+        </Grid>
 
-        <main className="flex-1 flex flex-col justify-center">
+        <Flex as="main" flex="1" direction="column" justify="center">
           <StatusBanner
             status={displayStatus.status}
             ageGroup={displayStatus.currentEvent?.ageGroup}
             nextEvent={displayStatus.nextEvent}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mt-16">
+          <Grid 
+            templateColumns={
+              displayStatus.currentEvent && displayStatus.nextEvent 
+                ? 'repeat(2, 1fr)' 
+                : '1fr'
+            }
+            gap="8" 
+            mt="8"
+            flex="1"
+            justifyItems="center"
+            maxW="100%"
+          >
             {displayStatus.currentEvent && (
-              <EventCard
-                event={displayStatus.currentEvent}
-                type="current"
-                timeRemaining={displayStatus.timeRemaining}
-              />
+              <GridItem w="100%" maxW={displayStatus.nextEvent ? "100%" : "800px"}>
+                <EventCard
+                  event={displayStatus.currentEvent}
+                  type="current"
+                  timeRemaining={displayStatus.timeRemaining}
+                />
+              </GridItem>
             )}
 
             {displayStatus.nextEvent && (
-              <EventCard
-                event={displayStatus.nextEvent}
-                type="next"
-                timeUntilStart={displayStatus.timeUntilNext}
-              />
+              <GridItem w="100%" maxW={displayStatus.currentEvent ? "100%" : "800px"}>
+                <EventCard
+                  event={displayStatus.nextEvent}
+                  type="next"
+                  timeUntilStart={displayStatus.timeUntilNext}
+                />
+              </GridItem>
             )}
-          </div>
+          </Grid>
+        </Flex>
 
-        </main>
-
-        <footer className="text-center text-secondary text-2xl mt-16">
-          <span>
+        <Box as="footer" textAlign="center" mt="4" py="2">
+          <Text fontSize="xl" color="fg.muted">
             Last updated: {lastUpdate ? lastUpdate.toLocaleTimeString() : 'N/A'}
-          </span>
+          </Text>
           {displayStatus.mockTime && (
-            <span className="ml-8 font-bold text-warning">
+            <Text fontSize="xl" fontWeight="bold" color="yellow.400" ml="8" display="inline">
               (Test Mode)
-            </span>
+            </Text>
           )}
-        </footer>
-      </div>
+        </Box>
+      </Box>
     </ErrorBoundary>
   );
 }

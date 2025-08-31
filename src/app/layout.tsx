@@ -1,5 +1,6 @@
 import { Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
+import { ChakraUIProvider } from '@/components/providers/chakra-provider';
 import './globals.css';
 
 const inter = Inter({ 
@@ -33,8 +34,10 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="font-sans antialiased">
-        {children}
-        <Analytics />
+        <ChakraUIProvider>
+          {children}
+          <Analytics />
+        </ChakraUIProvider>
       </body>
     </html>
   );
