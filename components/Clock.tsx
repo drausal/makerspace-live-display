@@ -28,8 +28,8 @@ export function Clock({ currentTime, mockTime }: ClockProps) {
   if (!displayTime) {
     return (
       <div className="text-right">
-        <div className="text-9xl font-bold tabular-nums">--:--:--</div>
-        <div className="text-5xl text-secondary">Loading...</div>
+        <div className="text-9xl font-bold tabular-nums text-white">--:--</div>
+        <div className="text-5xl text-gray-400">Loading...</div>
       </div>
     );
   }
@@ -51,8 +51,12 @@ export function Clock({ currentTime, mockTime }: ClockProps) {
 
   return (
     <div className="text-right">
-      <div className="text-[9.5rem] font-bold tabular-nums leading-none">{formatTime(displayTime)}</div>
-      <div className="text-[3.25rem] text-secondary mt-2">{formatDate(displayTime)}</div>
+      <div className="text-[9.5rem] font-bold tabular-nums leading-none text-white">
+        {formatTime(displayTime)}
+      </div>
+      <div className="text-[3.25rem] text-gray-400 mt-2">
+        {formatDate(displayTime)}
+      </div>
     </div>
   );
 }

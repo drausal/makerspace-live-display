@@ -43,15 +43,15 @@ export function EventCard({ event, type, timeRemaining, timeUntilStart }: EventC
       borderWidth="4px"
       borderColor={borderColor}
       bg="surface"
-      p="4"
+      p="3"
       w="100%"
-      maxH="500px"
+      maxH="450px"
       overflow="hidden"
     >
       <Card.Body>
-        <HStack justify="space-between" align="center" mb="4">
+        <HStack justify="space-between" align="center" mb="2">
           <Heading 
-            size="3xl" 
+            size="2xl" 
             fontWeight="bold"
             color={themeColor}
           >
@@ -61,10 +61,10 @@ export function EventCard({ event, type, timeRemaining, timeUntilStart }: EventC
         </HStack>
 
         <Heading 
-          size="4xl" 
+          size="3xl" 
           fontWeight="extrabold" 
           color="fg" 
-          mb="4"
+          mb="2"
           lineHeight="shorter"
         >
           {event.title}
@@ -72,38 +72,41 @@ export function EventCard({ event, type, timeRemaining, timeUntilStart }: EventC
 
         {event.description && (
           <Text 
-            fontSize="3xl" 
+            fontSize="xl" 
             color="fg.muted" 
-            mb="6" 
+            mb="4" 
             fontWeight="semibold"
             whiteSpace="pre-line"
+            noOfLines={2}
+            overflow="hidden"
+            textOverflow="ellipsis"
           >
             {event.description}
           </Text>
         )}
 
-        <Grid templateColumns="repeat(2, 1fr)" gap="6" textAlign="center">
+        <Grid templateColumns="repeat(2, 1fr)" gap="4" textAlign="center">
           <GridItem>
-            <Box bg="bg" p="6" rounded="md" minH="120px">
+            <Box bg="bg" p="4" rounded="md" minH="100px">
               <Heading size="lg" fontWeight="bold" color="fg.muted">START</Heading>
-              <Text fontSize="5xl" fontWeight="bold" color="fg">
+              <Text fontSize="4xl" fontWeight="bold" color="fg">
                 {formatTime(event.start)}
               </Text>
               {type === 'next' && !isToday(event.start) && (
-                <Text fontSize="xl" fontWeight="bold" color="blue.300" mt="2">
+                <Text fontSize="2xl" fontWeight="bold" color="blue.300" mt="1">
                   {formatDate(event.start)}
                 </Text>
               )}
             </Box>
           </GridItem>
           <GridItem>
-            <Box bg="bg" p="6" rounded="md" minH="120px">
+            <Box bg="bg" p="4" rounded="md" minH="100px">
               <Heading size="lg" fontWeight="bold" color="fg.muted">END</Heading>
-              <Text fontSize="5xl" fontWeight="bold" color="fg">
+              <Text fontSize="4xl" fontWeight="bold" color="fg">
                 {formatTime(event.end)}
               </Text>
               {type === 'next' && !isToday(event.end) && (
-                <Text fontSize="xl" fontWeight="bold" color="blue.300" mt="2">
+                <Text fontSize="2xl" fontWeight="bold" color="blue.300" mt="1">
                   {formatDate(event.end)}
                 </Text>
               )}

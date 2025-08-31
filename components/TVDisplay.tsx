@@ -134,16 +134,16 @@ export function TVDisplay() {
         className={`tv-display theme-${theme} animate-fadeIn`} 
         h="100vh" 
         w="100vw"
-        p="8"
+        p="6"
         display="flex"
         flexDirection="column"
         overflow="hidden"
       >
-        <Grid as="header" templateColumns="1fr 1fr" alignItems="start" mb="8" h="120px">
+        <Grid as="header" templateColumns="1fr 1fr" alignItems="start" mb="4" h="100px">
           <GridItem>
-            <VStack align="start" gap="2">
-              <Heading size="5xl" fontWeight="extrabold">HQ MAKERSPACE</Heading>
-              <Text fontSize="3xl" color="fg.muted">Event Schedule</Text>
+            <VStack align="start" gap="1">
+              <Heading size="4xl" fontWeight="extrabold">HQ MAKERSPACE</Heading>
+              <Text fontSize="2xl" color="fg.muted">Event Schedule</Text>
             </VStack>
           </GridItem>
           <GridItem>
@@ -167,11 +167,12 @@ export function TVDisplay() {
                 ? 'repeat(2, 1fr)' 
                 : '1fr'
             }
-            gap="8" 
-            mt="8"
+            gap="5" 
+            mt="4"
             flex="1"
             justifyItems="center"
             maxW="100%"
+            alignItems="stretch"
           >
             {displayStatus.currentEvent && (
               <GridItem w="100%" maxW={displayStatus.nextEvent ? "100%" : "800px"}>
