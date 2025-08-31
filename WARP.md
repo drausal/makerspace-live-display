@@ -100,7 +100,7 @@ src/
 │   ├── calendar-utils.ts       # Date/time utilities and calculations
 │   ├── event-validator.ts      # Event filtering and validation
 │   ├── logger.ts              # Logging system
-│   └── kv-storage.ts          # Vercel KV storage abstraction
+│   └── local-storage.ts       # LocalStorage with server-side fallback
 components/                   # React components (outside app/)
 ├── TVDisplay.tsx            # Main full-screen display component
 ├── AdminPanel.tsx           # Admin time override interface
@@ -189,7 +189,7 @@ interface AgeGroup {
 - No complex state management library needed
 - Local component state with `useState`
 - Server state via API polling
-- Mock time override stored in Vercel KV storage
+- Mock time override stored in localStorage
 
 ### File Naming Conventions
 - Components: PascalCase (e.g., `TVDisplay.tsx`, `EventCard.tsx`)
@@ -246,19 +246,16 @@ CALENDAR_ID=your_google_calendar_id@group.calendar.google.com
 # Admin Panel
 ADMIN_PASSWORD=secure_password_here
 
-# Optional: Vercel KV Storage (for time overrides)
-KV_REST_API_URL=https://your-kv-store.vercel-storage.com  
-KV_REST_API_TOKEN=your_kv_token_here
-
 # Optional: Display Behavior
 NEXT_PUBLIC_REFRESH_INTERVAL=30000  # milliseconds
 NEXT_PUBLIC_TIME_ZONE=America/Chicago
 ```
 
 ### Development vs Production
-- Development: Uses mock KV storage if Vercel KV unavailable
-- Production: Requires actual Vercel KV for admin time override features
+- Development: Uses memory storage fallback when localStorage is unavailable
+- Production: Uses browser localStorage for data persistence
 - Calendar fetching works in both environments with valid `CALENDAR_ID`
+- Server-side operations use memory storage with automatic fallback
 
 ## Common Development Tasks
 
@@ -297,7 +294,7 @@ NEXT_PUBLIC_TIME_ZONE=America/Chicago
 ### Common Issues
 - **Calendar not loading**: Check `CALENDAR_ID` environment variable and network access
 - **Age groups not detected**: Add console logs in `AgeGroupDetector.detectAgeGroup()`
-- **Time override not working**: Verify `ADMIN_PASSWORD` and Vercel KV configuration
+- **Time override not working**: Verify `ADMIN_PASSWORD` and localStorage availability
 - **Display not refreshing**: Check browser console for API polling errors
 
 ### Debugging Tools
@@ -326,14 +323,16 @@ npm run test:integration
 - API routes are serverless functions on Vercel
 
 ### Performance Notes
-- Calendar data cached with `next: { revalidate: 600 }` (10 minutes)
+- Calendar data cached in localStorage with 20-minute TTL
 - Client polls every 30 seconds for display updates
 - Age group detection is CPU-efficient with regex caching
+- Memory fallback ensures functionality when localStorage is unavailable
 
 ### Security
 - Admin panel protected by password (stored in environment)
 - Calendar data is read-only (public iCal URL)
 - No sensitive user data stored or transmitted
+- localStorage data is namespaced and client-side only
 
 ---
 

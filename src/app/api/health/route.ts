@@ -1,12 +1,12 @@
 // app/api/health/route.ts
 import { NextResponse } from 'next/server';
-import { KVStorage } from '@/lib/kv-storage';
+import { LocalStorage } from '@/lib/local-storage';
 
 export async function GET() {
   const startTime = Date.now();
   
   try {
-    const storage = new KVStorage();
+    const storage = new LocalStorage();
     
     console.log('🔍 Health check requested');
     
@@ -23,7 +23,7 @@ export async function GET() {
       },
       database: {
         connected: true,
-        provider: 'Vercel KV'
+        provider: 'LocalStorage'
       }
     };
     

@@ -1,10 +1,10 @@
 // app/api/display/status/route.ts
 import { NextResponse } from 'next/server';
 import { DisplayStatus, ProcessedEvent, AgeGroup } from '@/shared/types';
-import { KVStorage } from '@/lib/kv-storage';
+import { LocalStorage } from '@/lib/local-storage';
 
 export async function GET() {
-  const storage = new KVStorage();
+  const storage = new LocalStorage();
   
   try {
     console.log('📡 Display status API called');

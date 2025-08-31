@@ -1,9 +1,9 @@
 // app/api/admin/time-override/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { KVStorage } from '@/lib/kv-storage';
+import { LocalStorage } from '@/lib/local-storage';
 
 export async function POST(request: NextRequest) {
-  const storage = new KVStorage();
+  const storage = new LocalStorage();
   
   try {
     const body = await request.json();
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
-  const storage = new KVStorage();
+  const storage = new LocalStorage();
   
   try {
     const mockTime = await storage.getTimeOverride();

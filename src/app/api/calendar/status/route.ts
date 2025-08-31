@@ -3,13 +3,13 @@ import { NextResponse } from 'next/server';
 import { DisplayStatus } from '@/shared/types';
 import { calendarFetcher } from '@/lib/calendar-fetcher';
 import { eventValidator } from '@/lib/event-validator';
-import { KVStorage } from '@/lib/kv-storage';
+import { LocalStorage } from '@/lib/local-storage';
 import { Logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic'; // Ensure this route is always dynamic
 
 export async function GET() {
-  const storage = new KVStorage();
+  const storage = new LocalStorage();
 
   try {
     // 1. Get the current time (real or mocked)
@@ -20,6 +20,9 @@ export async function GET() {
 
     // 2. Fetch live events
     const allEvents = await calendarFetcher.fetchAllEvents();
+    
+    // Store events in localStorage for future use
+    await storage.storeEvents(allEvents);
     
     // 3. Filter for current and upcoming events based on the determined time
     const { current, upcoming } = eventValidator.filterCurrentAndUpcoming(
