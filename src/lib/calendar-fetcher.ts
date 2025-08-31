@@ -119,19 +119,32 @@ export class GoogleCalendarFetcher {
   private formatDescription(text: string): string {
     if (!text) return '';
     
-    // Unicode regex for emojis in common ranges. The 'u' flag is essential.
-    const emojiRegex = /([\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}])/gu;
+    // Look for text between 📑 emoji and the next emoji
+    const documentEmoji = '📑';
+    const emojiRegex = /[\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu;
     
-    // Add a newline before each emoji.
-    const formattedText = text.replace(emojiRegex, '\n$1');
+    // Find the 📑 emoji position
+    const docEmojiIndex = text.indexOf(documentEmoji);
+    if (docEmojiIndex === -1) {
+      // If no 📑 emoji found, return empty string
+      return '';
+    }
     
-    // Clean up the text, preserving newlines.
-    // Split by lines, trim each line, filter empty ones, and rejoin.
-    return formattedText
-      .split('\n')
-      .map(line => line.trim())
-      .filter(line => line)
-      .join('\n');
+    // Get text after the 📑 emoji
+    const textAfterDocEmoji = text.substring(docEmojiIndex + documentEmoji.length);
+    
+    // Find the next emoji after 📑
+    const nextEmojiMatch = textAfterDocEmoji.match(emojiRegex);
+    if (!nextEmojiMatch) {
+      // If no next emoji found, return the text after 📑 emoji, trimmed
+      return textAfterDocEmoji.trim();
+    }
+    
+    // Get text between 📑 and the next emoji
+    const nextEmojiIndex = textAfterDocEmoji.indexOf(nextEmojiMatch[0]);
+    const textBetweenEmojis = textAfterDocEmoji.substring(0, nextEmojiIndex);
+    
+    return textBetweenEmojis.trim();
   }
 
   private processEvent(rawEvent: RawCalEvent): ProcessedEvent {
