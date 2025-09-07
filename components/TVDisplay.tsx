@@ -154,7 +154,7 @@ export function TVDisplay() {
           </GridItem>
         </Grid>
 
-        <Flex as="main" flex="1" direction="column" justify="center">
+        <Flex as="main" flex="1" direction="column" justify="center" pt="32">
           <StatusBanner
             status={displayStatus.status}
             ageGroup={displayStatus.currentEvent?.ageGroup}

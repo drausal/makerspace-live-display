@@ -89,14 +89,16 @@ export function EventCard({ event, type, timeRemaining, timeUntilStart }: EventC
           <GridItem>
             <Box bg="bg" p="4" rounded="md" minH="100px">
               <Heading size="lg" fontWeight="bold" color="fg.muted">START</Heading>
-              <Text fontSize="4xl" fontWeight="bold" color="fg">
-                {formatTime(event.start)}
-              </Text>
-              {type === 'next' && !isToday(event.start) && (
-                <Text fontSize="2xl" fontWeight="bold" color="blue.300" mt="1">
-                  {formatDate(event.start)}
+              <HStack justify="center" align="center" gap="3">
+                <Text fontSize="4xl" fontWeight="bold" color="fg">
+                  {formatTime(event.start)}
                 </Text>
-              )}
+                {!isToday(event.start) && (
+                  <Text fontSize="2xl" fontWeight="bold" color="blue.300">
+                    {formatDate(event.start)}
+                  </Text>
+                )}
+              </HStack>
             </Box>
           </GridItem>
           <GridItem>
