@@ -77,9 +77,6 @@ export function EventCard({ event, type, timeRemaining, timeUntilStart }: EventC
             mb="4" 
             fontWeight="semibold"
             whiteSpace="pre-line"
-            noOfLines={2}
-            overflow="hidden"
-            textOverflow="ellipsis"
           >
             {event.description}
           </Text>
