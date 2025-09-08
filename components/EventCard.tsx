@@ -73,7 +73,7 @@ export function EventCard({ event, type, timeRemaining, timeUntilStart }: EventC
 
         {timeRemaining && (
           <Box textAlign="center" mb="2">
-            <Text fontSize="2xl" fontWeight="bold" color="green.400">
+            <Text fontSize="2xl" fontWeight="bold" color="#10b981">
               {timeRemaining} Remaining
             </Text>
           </Box>
@@ -81,7 +81,7 @@ export function EventCard({ event, type, timeRemaining, timeUntilStart }: EventC
 
         {timeUntilStart && (
           <Box textAlign="center" mb="2">
-            <Text fontSize="2xl" fontWeight="bold" color="yellow.400">
+            <Text fontSize="2xl" fontWeight="bold" color="#f59e0b">
               Starts in {timeUntilStart}
             </Text>
           </Box>
@@ -110,7 +110,7 @@ export function EventCard({ event, type, timeRemaining, timeUntilStart }: EventC
                   {formatTime(event.start)}
                 </Text>
                 {!isToday(event.start) && (
-                  <Text fontSize="xl" fontWeight="bold" color="blue.300">
+                  <Text fontSize="xl" fontWeight="bold" color="#60a5fa">
                     {formatDate(event.start)}
                   </Text>
                 )}
@@ -125,7 +125,7 @@ export function EventCard({ event, type, timeRemaining, timeUntilStart }: EventC
                   {formatTime(event.end)}
                 </Text>
                 {type === 'next' && !isToday(event.end) && (
-                  <Text fontSize="xl" fontWeight="bold" color="blue.300">
+                  <Text fontSize="xl" fontWeight="bold" color="#60a5fa">
                     {formatDate(event.end)}
                   </Text>
                 )}
