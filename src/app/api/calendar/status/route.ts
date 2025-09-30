@@ -13,16 +13,16 @@ export async function GET() {
 
   try {
     // 1. Get the current time (real or mocked)
-    const mockTimeStr = await storage.getTimeOverride();
+    const mockTimeStr = storage.getTimeOverride();
     const currentTime = mockTimeStr ? new Date(mockTimeStr) : new Date();
-    
+
     Logger.info('CalendarStatusAPI', `Processing request with time: ${currentTime.toISOString()} (mock: ${!!mockTimeStr})`);
 
     // 2. Fetch live events
     const allEvents = await calendarFetcher.fetchAllEvents();
-    
+
     // Store events in localStorage for future use
-    await storage.storeEvents(allEvents);
+    storage.storeEvents(allEvents);
     
     // 3. Filter for current and upcoming events based on the determined time
     const { current, upcoming } = eventValidator.filterCurrentAndUpcoming(

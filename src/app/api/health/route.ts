@@ -11,7 +11,7 @@ export async function GET() {
     console.log('🔍 Health check requested');
     
     // Get comprehensive system health
-    const health = await storage.getSystemHealth();
+    const health = storage.getSystemHealth();
     
     // Add additional health metrics
     const healthReport = {

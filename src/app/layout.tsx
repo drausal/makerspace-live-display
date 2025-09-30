@@ -31,7 +31,6 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable}`}>
       <head>
         <meta name="theme-color" content="#1e40af" />
-        <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="font-sans antialiased">
         <ChakraUIProvider>

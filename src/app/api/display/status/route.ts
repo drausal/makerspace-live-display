@@ -10,14 +10,14 @@ export async function GET() {
     console.log('📡 Display status API called');
 
     // Get mock time override if set
-    const mockTime = await storage.getTimeOverride();
+    const mockTime = storage.getTimeOverride();
     const currentTimeStr = mockTime || new Date().toISOString();
     const now = new Date(currentTimeStr);
 
     console.log(`⏰ Using time: ${currentTimeStr} (mock: ${!!mockTime})`);
 
     // Fetch processed events from storage
-    const events = await storage.getEvents();
+    const events = storage.getEvents();
     console.log(`📅 Retrieved ${events.length} events from storage`);
     
     // Filter for current and upcoming events based on the time

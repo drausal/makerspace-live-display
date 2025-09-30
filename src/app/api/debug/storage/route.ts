@@ -7,8 +7,8 @@ export async function GET() {
   const storage = new LocalStorage();
   
   try {
-    const storageInfo = await storage.getStorageInfo();
-    const systemHealth = await storage.getSystemHealth();
+    const storageInfo = storage.getStorageInfo();
+    const systemHealth = storage.getSystemHealth();
     
     return NextResponse.json({
       info: storageInfo,
@@ -40,7 +40,7 @@ export async function DELETE(request: NextRequest) {
       }, { status: 401 });
     }
     
-    await storage.clearAll();
+    storage.clearAll();
     console.log('🗑️ Admin cleared all localStorage data');
     
     return NextResponse.json({

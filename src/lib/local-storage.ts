@@ -62,18 +62,18 @@ export class LocalStorage {
   }
 
   // Store calendar events with timestamp for TTL simulation
-  async storeEvents(events: ProcessedEvent[]): Promise<void> {
+  storeEvents(events: ProcessedEvent[]): void {
     const data = {
       events,
       timestamp: Date.now(),
       ttl: 20 * 60 * 1000, // 20 minutes in milliseconds
     };
-    
+
     try {
       this.storage.setItem(createKey('calendar:events'), JSON.stringify(data));
       this.storage.setItem(createKey('calendar:lastUpdate'), new Date().toISOString());
       this.storage.setItem(createKey('calendar:eventCount'), events.length.toString());
-      
+
       console.log(`📦 Stored ${events.length} events in localStorage with 20min TTL`);
     } catch (error) {
       console.error('📦 Error storing events:', error);
@@ -85,22 +85,22 @@ export class LocalStorage {
   }
 
   // Retrieve stored events with TTL check
-  async getEvents(): Promise<ProcessedEvent[]> {
+  getEvents(): ProcessedEvent[] {
     try {
       let dataJson = this.storage.getItem(createKey('calendar:events'));
-      
+
       // Try memory storage if main storage fails
       if (!dataJson) {
         dataJson = this.memoryStorage.getItem(createKey('calendar:events'));
       }
-      
+
       if (!dataJson) {
         console.log('📦 No events found in storage');
         return [];
       }
 
       const data = JSON.parse(dataJson);
-      
+
       // Check TTL
       const isExpired = data.timestamp && (Date.now() - data.timestamp) > data.ttl;
       if (isExpired) {
@@ -119,18 +119,18 @@ export class LocalStorage {
   }
 
   // Store fetch results and errors for debugging
-  async storeFetchResult(result: CalendarFetchResult): Promise<void> {
+  storeFetchResult(result: CalendarFetchResult): void {
     try {
       this.storage.setItem(createKey('calendar:lastFetchResult'), JSON.stringify(result));
-      
+
       if (!result.success) {
         // Store errors for debugging
-        const errors = await this.getRecentErrors();
+        const errors = this.getRecentErrors();
         errors.unshift({
           timestamp: result.lastFetch,
           errors: result.errors
         });
-        
+
         // Keep only last 10 errors
         this.storage.setItem(createKey('calendar:recentErrors'), JSON.stringify(errors.slice(0, 10)));
         console.log(`🚨 Stored fetch errors: ${result.errors.join(', ')}`);
@@ -141,7 +141,7 @@ export class LocalStorage {
   }
 
   // Admin time override storage
-  async setTimeOverride(mockTime: string | null): Promise<void> {
+  setTimeOverride(mockTime: string | null): void {
     try {
       if (mockTime) {
         this.storage.setItem(createKey('admin:mockTime'), mockTime);
@@ -161,15 +161,15 @@ export class LocalStorage {
     }
   }
 
-  async getTimeOverride(): Promise<string | null> {
+  getTimeOverride(): string | null {
     try {
       let mockTime = this.storage.getItem(createKey('admin:mockTime'));
-      
+
       // Try memory storage if main storage fails
       if (!mockTime) {
         mockTime = this.memoryStorage.getItem(createKey('admin:mockTime'));
       }
-      
+
       if (mockTime) {
         console.log(`⏰ Active time override: ${mockTime}`);
       }
@@ -181,7 +181,7 @@ export class LocalStorage {
   }
 
   // Store age group statistics
-  async storeAgeGroupStats(stats: Record<string, number>): Promise<void> {
+  storeAgeGroupStats(stats: Record<string, number>): void {
     try {
       this.storage.setItem(createKey('calendar:ageGroupStats'), JSON.stringify(stats));
       console.log('📊 Stored age group statistics:', stats);
@@ -190,7 +190,7 @@ export class LocalStorage {
     }
   }
 
-  async getAgeGroupStats(): Promise<Record<string, number>> {
+  getAgeGroupStats(): Record<string, number> {
     try {
       const stats = this.storage.getItem(createKey('calendar:ageGroupStats'));
       return stats ? JSON.parse(stats) : {};
@@ -201,13 +201,13 @@ export class LocalStorage {
   }
 
   // Health monitoring data
-  async getSystemHealth(): Promise<SystemHealth> {
+  getSystemHealth(): SystemHealth {
     try {
       const lastUpdate = this.storage.getItem(createKey('calendar:lastUpdate'));
       const eventCountStr = this.storage.getItem(createKey('calendar:eventCount'));
       const eventCount = eventCountStr ? parseInt(eventCountStr, 10) : 0;
-      const recentErrors = await this.getRecentErrors();
-      const ageGroupStats = await this.getAgeGroupStats();
+      const recentErrors = this.getRecentErrors();
+      const ageGroupStats = this.getAgeGroupStats();
 
       return {
         calendar: {
@@ -240,7 +240,7 @@ export class LocalStorage {
     }
   }
 
-  private async getRecentErrors(): Promise<Array<{timestamp: string, errors: string[]}>> {
+  private getRecentErrors(): Array<{timestamp: string, errors: string[]}> {
     try {
       const errors = this.storage.getItem(createKey('calendar:recentErrors'));
       return errors ? JSON.parse(errors) : [];
@@ -251,22 +251,22 @@ export class LocalStorage {
   }
 
   // Clear all stored data (useful for debugging)
-  async clearAll(): Promise<void> {
+  clearAll(): void {
     try {
       const keys = [
         'calendar:events',
-        'calendar:lastUpdate', 
+        'calendar:lastUpdate',
         'calendar:eventCount',
         'calendar:lastFetchResult',
         'calendar:recentErrors',
         'calendar:ageGroupStats',
         'admin:mockTime'
       ];
-      
+
       keys.forEach(key => {
         this.storage.removeItem(createKey(key));
       });
-      
+
       console.log('📦 Cleared all localStorage data');
     } catch (error) {
       console.error('📦 Error clearing localStorage:', error);
@@ -274,19 +274,19 @@ export class LocalStorage {
   }
 
   // Get storage info for debugging
-  async getStorageInfo(): Promise<{
+  getStorageInfo(): {
     type: string;
     usage?: string;
     keys: string[];
-  }> {
+  } {
     const keys: string[] = [];
     let storageType = 'unknown';
     let usage = 'unknown';
-    
+
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
         storageType = 'localStorage';
-        
+
         // Get all keys with our prefix
         for (let i = 0; i < window.localStorage.length; i++) {
           const key = window.localStorage.key(i);
@@ -294,7 +294,7 @@ export class LocalStorage {
             keys.push(key);
           }
         }
-        
+
         // Estimate usage
         let totalSize = 0;
         keys.forEach(key => {
@@ -312,7 +312,7 @@ export class LocalStorage {
     } catch (error) {
       console.error('📊 Error getting storage info:', error);
     }
-    
+
     return {
       type: storageType,
       usage,

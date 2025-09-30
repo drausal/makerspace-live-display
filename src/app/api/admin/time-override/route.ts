@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
     
-    await storage.setTimeOverride(mockTime || null);
+    storage.setTimeOverride(mockTime || null);
     
     const response = {
       success: true,
@@ -55,7 +55,7 @@ export async function GET() {
   const storage = new LocalStorage();
   
   try {
-    const mockTime = await storage.getTimeOverride();
+    const mockTime = storage.getTimeOverride();
     
     console.log(`⚙️ Admin time override status: ${mockTime || 'NONE'}`);
     
