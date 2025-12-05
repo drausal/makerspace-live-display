@@ -5,6 +5,7 @@ import { calendarFetcher } from '@/lib/calendar-fetcher';
 import { eventValidator } from '@/lib/event-validator';
 import { LocalStorage } from '@/lib/local-storage';
 import { Logger } from '@/lib/logger';
+import { calendarCache } from '@/lib/calendar-cache';
 
 export const dynamic = 'force-dynamic'; // Ensure this route is always dynamic
 
@@ -18,11 +19,21 @@ export async function GET() {
 
     Logger.info('CalendarStatusAPI', `Processing request with time: ${currentTime.toISOString()} (mock: ${!!mockTimeStr})`);
 
-    // 2. Fetch live events
-    const allEvents = await calendarFetcher.fetchAllEvents();
-
-    // Store events in localStorage for future use
-    storage.storeEvents(allEvents);
+    // 2. Try to get events from cache first, fetch only if cache is expired
+    let allEvents = calendarCache.get();
+    
+    if (!allEvents) {
+      Logger.info('CalendarStatusAPI', 'Cache miss or expired - fetching from Google Calendar');
+      allEvents = await calendarFetcher.fetchAllEvents();
+      
+      // Store in server-side cache (30 min TTL)
+      calendarCache.set(allEvents);
+      
+      // Also store in localStorage for client-side fallback
+      await storage.storeEvents(allEvents);
+    } else {
+      Logger.info('CalendarStatusAPI', `Using cached events (${allEvents.length} events)`);
+    }
     
     // 3. Filter for current and upcoming events based on the determined time
     const { current, upcoming } = eventValidator.filterCurrentAndUpcoming(
